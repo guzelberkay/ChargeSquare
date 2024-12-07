@@ -1,0 +1,65 @@
+// ROOT build.gradle dosyası: Bu dosya ile bu proje altında bulunan Modullere dependencieslerin yönetimini sağlanmaya çalışılmaktadır.
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.5'
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'application'
+    id 'java-library'
+}
+
+//allprojects: Kök dizin ve onun altındaki dizinlerden bahsediyoruz.
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'application'
+    apply plugin: 'java-library'
+    apply from: "${rootDir}/dependencies.gradle"
+
+}
+//subprojects: Sadece alttaki modüllerden bahsediyoruz.
+subprojects {
+    group = 'com.berkayg'
+    version = 'v0.0.1'
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+// türkçe karakter sorununu önelemk için:
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = "UTF-8"
+    }
+
+    buildscript {
+        dependencies {
+            classpath("org.springframework.boot:spring-boot-gradle-plugin:${versions.springBoot}")
+        }
+    }
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        //implementation libs.springBootWeb
+        compileOnly libs.lombok
+        annotationProcessor libs.lombok
+        implementation libs.openapi
+        implementation libs.mapstruct
+        annotationProcessor libs.mapstructProcessor
+        implementation libs.jwt
+
+    }
+
+    buildscript {
+        repositories {
+            mavenCentral()
+        }
+    }
+
+}
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}

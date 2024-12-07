@@ -1,0 +1,5 @@
+rootProject.name = 'ChargeSquare'
+include 'ChargingStationService'
+include 'ApiGatewayService'
+include 'ChargeSquareExternalService'
+

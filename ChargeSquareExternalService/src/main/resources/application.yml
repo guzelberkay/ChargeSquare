@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/chargesquare
+    username: yourusername  # PostgreSQL kullanıcı adı
+    password: yourpassword  # PostgreSQL parolası
+    driver-class-name: org.postgresql.Driver
+    dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  kafka:
+    bootstrap-servers: localhost:9092  # Kafka sunucusunun adresi
+    consumer:
+      group-id: chargesquare-consumer-group
+    producer:
+      acks: all
+
+  jpa:
+    hibernate:
+      ddl-auto: update  # Veritabanı tablolarının otomatik olarak oluşturulmasını sağlar
+    show-sql: true  # SQL sorgularını konsola yazdırmak için
+
+external:
+  api:
+    url: https://api.openchargemap.io/v3/poi?output=json  # Harici API URL'ini buraya ekleyin

@@ -1,0 +1,21 @@
+server:
+  port: 9090
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/charging_stationsDB
+    username: postgres
+    password: 1234
+    hikari:
+      maximum-pool-size: 10  # HikariCP bağlantı havuzunun ayarları
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+        hibernate.format_sql: true  # SQL sorgularının formatlanmış şekilde loglanmasını sağlar
+        hibernate.use_sql_comments: true  # SQL yorumlarını gösterir
+    open-in-view: false  # Bu, Spring MVC'nin JPA bağlamını her HTTP isteği için açık tutmasını engeller

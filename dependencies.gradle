@@ -1,0 +1,40 @@
+ext {
+    versions = [
+            springBoot       : "3.2.5",
+            lombok           : "1.18.32",
+            postgresql       : "42.7.3",
+            openapi          : "2.5.0",
+            mapstruct        : "1.5.5.Final",
+            jwt              : "4.4.0",
+            validator        : "8.0.1.Final",
+            springCloud      : "4.1.1",
+            circuitBreaker   : "3.1.0",
+            redis            : "2.7.2"  // Redis bağımlılığı için eklenen versiyon
+    ]
+
+    libs = [
+            springBootWeb                   : "org.springframework.boot:spring-boot-starter-web:$versions.springBoot",
+            springBootDataJpa               : "org.springframework.boot:spring-boot-starter-data-jpa:$versions.springBoot",
+
+            springCloudOpenFeign            : "org.springframework.cloud:spring-cloud-starter-openfeign:$versions.springCloud",
+
+            springCloudOpenGateway          : "org.springframework.cloud:spring-cloud-starter-gateway:$versions.springCloud",
+            springCloudCircuitBreakerReactor: "org.springframework.cloud:spring-cloud-starter-circuitbreaker-reactor-resilience4j:$versions.circuitBreaker",
+
+            springCloudConfig               : "org.springframework.cloud:spring-cloud-starter-config:$versions.springCloud",
+            springCloudConfigServer         : "org.springframework.cloud:spring-cloud-config-server:$versions.springCloud",
+            springCloudConfigClient         : "org.springframework.cloud:spring-cloud-config-client:$versions.springCloud",
+
+            lombok                          : "org.projectlombok:lombok:$versions.lombok",
+            openapi                         : "org.springdoc:springdoc-openapi-starter-webmvc-ui:$versions.openapi",
+            postgresql                      : "org.postgresql:postgresql:$versions.postgresql",
+
+            mapstruct                       : "org.mapstruct:mapstruct:$versions.mapstruct",
+            mapstructProcessor              : "org.mapstruct:mapstruct-processor:$versions.mapstruct",
+
+            jwt                             : "com.auth0:java-jwt:$versions.jwt",
+            validator                       : "org.hibernate.validator:hibernate-validator:$versions.validator",
+
+            redisReactive                   : "org.springframework.boot:spring-boot-starter-data-redis-reactive:$versions.redis"  // Redis Reactive
+    ]
+}
