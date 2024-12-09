@@ -1,5 +1,9 @@
 dependencies {
 
-    runtimeOnly libs.postgresql
+    implementation libs.json
+    implementation libs.springKafkaConsumer
+    implementation libs.springCloudOpenFeign
+    implementation libs.springBootWeb
+
 
 }

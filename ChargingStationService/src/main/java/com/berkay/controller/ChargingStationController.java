@@ -1,7 +1,6 @@
 package com.berkay.controller;
 
 import com.berkay.dto.request.ChargingStationCreateRequestDTO;
-import com.berkay.dto.response.ChargingStationDetailResponseDTO;
 import com.berkay.dto.response.ChargingStationLocationDTO;
 import com.berkay.dto.response.ResponseDTO;
 import com.berkay.service.ChargingStationService;
@@ -12,14 +11,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 
 import static com.berkay.constants.EndPoints.*;
 
 @RestController
-@RequestMapping(STATIONS)
 @RequiredArgsConstructor
+@RequestMapping(STATIONS)
 public class ChargingStationController {
 
     private final ChargingStationService chargingStationService;

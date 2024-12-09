@@ -9,7 +9,9 @@ ext {
             validator        : "8.0.1.Final",
             springCloud      : "4.1.1",
             circuitBreaker   : "3.1.0",
-            redis            : "2.7.2"  // Redis bağımlılığı için eklenen versiyon
+            redis            : "2.7.2",  // Redis bağımlılığı için eklenen versiyon
+            json             : "20211205", // org.json bağımlılığı için versiyon
+            springKafka      : "3.1.1" // Spring Kafka'nın versiyonunu ekleyin
     ]
 
     libs = [
@@ -35,6 +37,12 @@ ext {
             jwt                             : "com.auth0:java-jwt:$versions.jwt",
             validator                       : "org.hibernate.validator:hibernate-validator:$versions.validator",
 
-            redisReactive                   : "org.springframework.boot:spring-boot-starter-data-redis-reactive:$versions.redis"  // Redis Reactive
+            redisReactive                   : "org.springframework.boot:spring-boot-starter-data-redis-reactive:$versions.redis",  // Redis Reactive
+
+            json                            : "org.json:json:$versions.json",  // org.json bağımlılığı
+
+            // Kafka Bağımlılıkları
+            springKafkaProducer             : "org.springframework.kafka:spring-kafka:$versions.springKafka", // Kafka Producer
+            springKafkaConsumer             : "org.springframework.kafka:spring-kafka:$versions.springKafka"  // Kafka Consumer
     ]
 }

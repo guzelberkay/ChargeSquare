@@ -1,7 +1,7 @@
 package com.berkay.service;
 
 import com.berkay.dto.request.ChargingStationCreateRequestDTO;
-import com.berkay.dto.response.ChargingStationDetailResponseDTO;
+import com.berkay.dto.request.LocationSaveRequestDTO;
 import com.berkay.dto.response.ChargingStationLocationDTO;
 import com.berkay.dto.response.LocationResponseDTO;
 import com.berkay.entity.ChargingStation;
@@ -9,6 +9,9 @@ import com.berkay.entity.Location;
 import com.berkay.repository.ChargingStationRepository;
 import com.berkay.repository.LocationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,53 +20,57 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@EnableKafka
 public class ChargingStationService {
 
     private final ChargingStationRepository chargingStationRepository;
     private final LocationRepository locationRepository;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+
+    private static final String TOPIC = "create-charging-station";
 
     @Transactional
     public boolean createChargingStation(ChargingStationCreateRequestDTO dto) {
-
-        // İsimle var olan bir ChargingStation olup olmadığını kontrol et
+        // Var olan bir istasyon olup olmadığını kontrol et
         ChargingStation existingStation = chargingStationRepository.findByName(dto.name())
                 .orElse(null); // Burada Optional yerine null döndürüyoruz.
 
-        // Eğer var olan bir istasyon varsa, hata fırlatıyoruz
         if (existingStation != null) {
             throw new IllegalArgumentException("Bu isme sahip bir ChargingStation zaten mevcut: " + dto.name());
         }
 
-        List<Long> locationIds = dto.locationIds();
-
-        // Geçerli Location ID'lerini alıyoruz
-        List<Long> validLocationIds = locationRepository.findIdsByIds(locationIds);
-
-        // Geçersiz ID'leri filtreliyoruz
-        List<Long> invalidLocationIds = locationIds.stream()
-                .filter(id -> !validLocationIds.contains(id)) // Geçersiz ID'leri buluyoruz
-                .collect(Collectors.toList());
-
-        // Geçersiz Location ID'lerini logluyoruz (isteğe bağlı)
-        if (!invalidLocationIds.isEmpty()) {
-            System.out.println("Geçersiz Location ID'leri: " + invalidLocationIds); // Geçersiz ID'leri kaydedebiliriz
+        // Yeni location nesneleri oluşturuluyor
+        List<Location> newLocations = new ArrayList<>();
+        for (LocationSaveRequestDTO locationDto : dto.locationDtos()) {
+            Location location = new Location();
+            location.setAddress(locationDto.address());
+            location.setCity(locationDto.city());
+            location.setCountry(locationDto.country());
+            locationRepository.save(location);
+            newLocations.add(location);
         }
 
-        // Geçerli Location nesnelerini alıyoruz
-        List<Location> validLocations = locationRepository.findAllById(validLocationIds);
-
-        // Yeni ChargingStation nesnesi oluşturuyoruz
+        // Yeni ChargingStation nesnesi oluşturuluyor
         ChargingStation chargingStation = ChargingStation.builder()
                 .name(dto.name())
                 .chargeSpeed(dto.chargeSpeed())
-                .locations(validLocations) // Yalnızca geçerli location nesneleri
+                .locations(newLocations)
                 .build();
 
-        // ChargingStation'ı repository'ye kaydediyoruz
+        // ChargingStation veritabanına kaydediliyor
         chargingStationRepository.save(chargingStation);
+
+        // Veritabanına kaydedildiğini kontrol ediyoruz
+        System.out.println("ChargingStation başarıyla kaydedildi: " + chargingStation);
+
+        // Kafka'ya mesaj gönderiliyor
+        kafkaTemplate.send(TOPIC, dto);
+        System.out.println("Mesaj Kafka'ya başarıyla gönderildi: " + dto);
 
         return true;
     }
+
+
     public ChargingStationLocationDTO findByStationId(Long stationId) {
         // Fetching raw results from the repository for the given station ID
         List<Object[]> rawResults = locationRepository.findStationLocationDetailsByStationId(stationId);
@@ -133,8 +140,6 @@ public class ChargingStationService {
         // stationMap'teki tüm stationları döndürüyoruz
         return new ArrayList<>(stationMap.values());
     }
-
-
 
 
 }

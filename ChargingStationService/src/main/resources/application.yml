@@ -19,3 +19,21 @@ spring:
         hibernate.format_sql: true  # SQL sorgularının formatlanmış şekilde loglanmasını sağlar
         hibernate.use_sql_comments: true  # SQL yorumlarını gösterir
     open-in-view: false  # Bu, Spring MVC'nin JPA bağlamını her HTTP isteği için açık tutmasını engeller
+
+  kafka:
+    consumer:
+      auto-offset-reset: earliest
+      bootstrap-servers: localhost:29092
+      group-id: charging-station-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer  # Default JsonDeserializer
+
+      properties:
+        spring.json.trusted.packages: com.berkay.dto  # Ensure the package is trusted
+        spring.json.value.default.type: com.berkay.dto.request.ChargingStationCreateRequestDTO  # Specify the class type
+
+    producer:
+      acks: -1
+      bootstrap-servers: localhost:29092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer

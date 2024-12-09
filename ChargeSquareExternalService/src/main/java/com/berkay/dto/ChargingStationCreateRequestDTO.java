@@ -1,4 +1,4 @@
-package com.berkay.dto.request;
+package com.berkay.dto;
 import java.util.List;
 
 

@@ -9,6 +9,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/ApiGatewayService" />
+            <option value="$PROJECT_DIR$/ChargeSquareExternalService" />
             <option value="$PROJECT_DIR$/ChargingStationService" />
           </set>
         </option>

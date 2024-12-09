@@ -1,23 +1,29 @@
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/chargesquare
-    username: yourusername  # PostgreSQL kullanıcı adı
-    password: yourpassword  # PostgreSQL parolası
-    driver-class-name: org.postgresql.Driver
-    dialect: org.hibernate.dialect.PostgreSQLDialect
+server:
+  port: 9091
 
+spring:
   kafka:
-    bootstrap-servers: localhost:9092  # Kafka sunucusunun adresi
+    topic:
+      create-charging-station: create-charging-station-topic
     consumer:
-      group-id: chargesquare-consumer-group
+      auto-offset-reset: earliest
+      bootstrap-servers: localhost:29092
+      group-id: replace with your group id
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.learning.events
     producer:
-      acks: all
+      acks: -1
+      bootstrap-servers: localhost:29092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
   jpa:
     hibernate:
-      ddl-auto: update  # Veritabanı tablolarının otomatik olarak oluşturulmasını sağlar
-    show-sql: true  # SQL sorgularını konsola yazdırmak için
+      ddl-auto: update
+    show-sql: true
 
-external:
-  api:
-    url: https://api.openchargemap.io/v3/poi?output=json  # Harici API URL'ini buraya ekleyin
+  # Dış servisin base URL'si
+  charging-square-external-service:
+    base-url: http://localhost/dev/v1/stations/get-all-stations  # Dış servisin URL'si
