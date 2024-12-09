@@ -3,6 +3,7 @@ package com.berkay.controller;
 import com.berkay.dto.request.ChargingStationCreateRequestDTO;
 import com.berkay.dto.response.ChargingStationLocationDTO;
 import com.berkay.dto.response.ResponseDTO;
+import com.berkay.kafka.model.ConsumerCreateChargeStation;
 import com.berkay.service.ChargingStationService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class ChargingStationController {
 
     @Operation(summary = "Create a new charging station", description = "Adds a new charging station with the provided details.")
     @PostMapping(CREATE_STATION)
-    public ResponseEntity<ResponseDTO<Boolean>> createChargingStation(@RequestBody ChargingStationCreateRequestDTO dto) {
+    public ResponseEntity<ResponseDTO<Boolean>> createChargingStation(@RequestBody ConsumerCreateChargeStation dto) {
         Boolean isCreated = chargingStationService.createChargingStation(dto);
         return ResponseEntity.ok(
                 ResponseDTO.<Boolean>builder()

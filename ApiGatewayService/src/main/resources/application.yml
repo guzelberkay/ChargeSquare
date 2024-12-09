@@ -1,53 +1,8 @@
-server:
-  port: 80
-
 spring:
-  main:
-    web-application-type: reactive
   cloud:
-    gateway:
-      routes:
-        - id: chargestations
-          uri: http://localhost:9090
-          predicates:
-            - Path=/stations/**
-
-        - id: get_all_stations_route
-          uri: http://localhost:9090
-          predicates:
-            - Path=/dev/v1/stations/get-all-stations
-
-        - id: get_station_by_id_route
-          uri: http://localhost:9090
-          predicates:
-            - Path=/dev/v1/stations/get-station-by-id/{stationId}
-            - Query=stationId={stationId}
-
-        - id: create-stations
-          uri: http://localhost:9090
-          predicates:
-            - Path=/dev/v1/stations/create-stations
-
-        - id: create-stations
-          uri: http://localhost:9090
-          predicates:
-            - Path=/dev/v1/stations/create-stations
-
-        - id: create-location
-          uri: http://localhost:9090
-          predicates:
-            - Path=/dev/v1/locations/create-location
-
-        - id: get-all-locations
-          uri: http://localhost:9090
-          predicates:
-            - Path=/dev/v1/locations/get-all-locations
-
-redis:
-  host: chargesquare-redis-1     # Redis konteynerinin adı
-  port: 6379
-
-cache:
-  type: redis                    # Önbellek için Redis kullan
-  redis:
-    time-to-live: 3600s           # Cache'deki verilerin 1 saat sonra otomatik silinmesini sağlar
+    config:
+      uri: http://localhost:8888
+  config:
+    import: "configserver:"
+  application:
+    name: api-gateway-application

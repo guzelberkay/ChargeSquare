@@ -1,29 +1,8 @@
-server:
-  port: 9091
-
 spring:
-  kafka:
-    topic:
-      create-charging-station: create-charging-station-topic
-    consumer:
-      auto-offset-reset: earliest
-      bootstrap-servers: localhost:29092
-      group-id: replace with your group id
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring.json.trusted.packages: com.learning.events
-    producer:
-      acks: -1
-      bootstrap-servers: localhost:29092
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-
-  # Dış servisin base URL'si
-  charging-square-external-service:
-    base-url: http://localhost/dev/v1/stations/get-all-stations  # Dış servisin URL'si
+  cloud:
+    config:
+      uri: http://localhost:8888
+  config:
+    import: "configserver:"
+  application:
+    name: charge-square-external-service-application
