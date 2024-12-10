@@ -11,6 +11,7 @@ import com.berkay.kafka.model.ConsumerLocations;
 import com.berkay.repository.ChargingStationRepository;
 import com.berkay.repository.LocationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.kafka.annotation.EnableKafka;
 
 import org.springframework.stereotype.Service;
@@ -58,7 +59,7 @@ public class ChargingStationService {
         return true;
     }
 
-
+    @Cacheable(value = "station-find-by-id-case")
     public ChargingStationLocationDTO findByStationId(Long stationId) {
         // Fetching raw results from the repository for the given station ID
         List<Object[]> rawResults = locationRepository.findStationLocationDetailsByStationId(stationId);
@@ -93,7 +94,7 @@ public class ChargingStationService {
 
 
 
-
+    @Cacheable(value = "station-find-all-case")
     public List<ChargingStationLocationDTO> findAll() {
         // Repository'den ham sonuçları çekiyoruz
         List<Object[]> rawResults = locationRepository.findAllStationLocationDetails();
@@ -121,7 +122,7 @@ public class ChargingStationService {
                     ));
 
             // Bu stationId için yeni bir locationDTO ekliyoruz
-            stationDTO.locations().add(new LocationResponseDTO(locationId, locationCountry, locationCity, locationAddress));
+            stationDTO.getLocations().add(new LocationResponseDTO(locationId, locationCountry, locationCity, locationAddress));
         }
 
         // stationMap'teki tüm stationları döndürüyoruz

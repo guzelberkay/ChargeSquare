@@ -4,6 +4,7 @@ dependencies {
     implementation libs.validator
     implementation libs.springCloudOpenFeign
     implementation libs.springBootWeb
+    implementation libs.redisReactive
 
     // Kafka Producer Bağımlılığı
     implementation libs.springKafkaProducer

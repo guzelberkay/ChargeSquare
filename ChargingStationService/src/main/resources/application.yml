@@ -1,8 +1,6 @@
 spring:
   cloud:
     config:
-      uri: http://localhost:8888
-  config:
-    import: "configserver:"
+      uri: http://localhost:8888  # Config Server'a bağlanma URI'si (HTTP üzerinden erişim)
   application:
-    name: charging-station-service-application
+    name: charge-application # Mikroservis adı

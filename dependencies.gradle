@@ -29,7 +29,7 @@ ext {
 
             lombok                          : "org.projectlombok:lombok:$versions.lombok",
             openapi                         : "org.springdoc:springdoc-openapi-starter-webmvc-ui:$versions.openapi",
-            postgresql                      : "org.postgresql:postgresql:$versions.postgresql",
+            postgresql                      : "org.postgresql:postgresql:$versions.postgresql",  // PostgreSQL JDBC Driver
 
             mapstruct                       : "org.mapstruct:mapstruct:$versions.mapstruct",
             mapstructProcessor              : "org.mapstruct:mapstruct-processor:$versions.mapstruct",
@@ -37,7 +37,6 @@ ext {
             jwt                             : "com.auth0:java-jwt:$versions.jwt",
             validator                       : "org.hibernate.validator:hibernate-validator:$versions.validator",
             redisReactive                   : "org.springframework.boot:spring-boot-starter-data-redis-reactive:$versions.redis",  // Redis Reactive
-
 
             json                            : "org.json:json:$versions.json",
 

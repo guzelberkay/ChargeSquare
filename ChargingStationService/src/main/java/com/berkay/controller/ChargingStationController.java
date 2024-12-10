@@ -40,7 +40,6 @@ public class ChargingStationController {
             summary = "Get all charging stations",
             description = "Fetches a list of all available charging stations."
     )
-    @Cacheable(value = "stationsCache", key = "#root.methodName")
     @GetMapping(GET_ALL_STATIONS)  // /stations/get-all-stations
     public ResponseEntity<ResponseDTO<List<ChargingStationLocationDTO>>> getAllChargingStations() {
         List<ChargingStationLocationDTO> stations = chargingStationService.findAll();
@@ -54,7 +53,6 @@ public class ChargingStationController {
             summary = "Get charging station by ID",
             description = "Fetches detailed information about a specific charging station by its ID."
     )
-    @Cacheable(value = "stationCache", key = "#stationId")
     @GetMapping(GET_STATION_BY_ID)  // /stations/get-station-by-id
     public ResponseEntity<ResponseDTO<ChargingStationLocationDTO>> getChargingStationById(@RequestParam Long stationId) {
         ChargingStationLocationDTO station = chargingStationService.findByStationId(stationId);
