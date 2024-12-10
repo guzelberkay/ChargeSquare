@@ -8,4 +8,5 @@ dependencies {
 
     // Kafka Producer Bağımlılığı
     implementation libs.springKafkaProducer
+    implementation libs.springCloudConfigClient
 }

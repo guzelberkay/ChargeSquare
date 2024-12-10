@@ -3,6 +3,10 @@ dependencies {
     implementation libs.json
     implementation libs.springKafkaConsumer
     implementation libs.springCloudOpenFeign
+    implementation libs.springCloudConfigClient
+    implementation libs.springBootWeb
+
+
 
 
 
