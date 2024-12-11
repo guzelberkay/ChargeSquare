@@ -5,22 +5,26 @@ import com.berkay.kafka.model.ConsumerLocations;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
 public class ChargeSquareProducer {
 
     private final KafkaTemplate<String, ConsumerCreateChargeStation> kafkaTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     private final String API_URL = "https://api.openchargemap.io/v3/poi/?output=json&countrycode=TR&key=b1f15906-8911-4bb7-abfb-b99cf39b98d2";
     private static final String TOPIC = "create-charging-station";
-
+    private static final String REDIS_KEY_PREFIX = "charging_station:"; // Redis anahtar prefix
 
     public void sendCreate() {
         // RestTemplate ile API'den veri çek
@@ -29,18 +33,41 @@ public class ChargeSquareProducer {
 
         // JSON verisini işle
         JSONArray jsonArray = new JSONArray(response);
+        int arrayLength = jsonArray.length();
 
-        // JSON dizisi en fazla 5 elemanla sınırlı işleniyor
-        int limit = Math.min(jsonArray.length(), 5); // Eğer 5'ten az veri varsa o kadarını işleyelim.
-        for (int i = 0; i < limit; i++) {
+        // Random sınıfını kullanarak rastgele bir başlangıç indeksi belirle
+        Random random = new Random();
+        int startIndex = random.nextInt(arrayLength); // 0 ile arrayLength-1 arasında rastgele bir değer
+
+        // Döngüyü başlat, rastgele başlangıç indeksinden başlayarak 5 elemanı işleyelim
+        int processedCount = 0; // İşlenen veri sayısı
+        for (int i = startIndex; processedCount < 5 && i < arrayLength; i++) {
             JSONObject stationData = jsonArray.getJSONObject(i);
+
+            // "ID" değerini alın ve String'e dönüştürün
+            Object idObject = stationData.opt("ID"); // Türden emin olmadığımız için "opt" kullanıyoruz
+            if (idObject == null) {
+                System.out.println("ID alanı mevcut değil. Atlanıyor.");
+                continue;
+            }
+            String stationId = idObject.toString(); // ID'yi String'e dönüştür
+
+            // Redis kontrolü: Aynı ID varsa işlemi atla
+            if (redisTemplate.opsForValue().get(REDIS_KEY_PREFIX + stationId) != null) {
+                System.out.println("Veri zaten işlendi: " + stationId);
+                continue;
+            }
+
+            // Yeni veri ise işle ve Redis'e kaydet
             ConsumerCreateChargeStation chargingStation = convertToChargingStationCreateRequestDTO(stationData);
-
-            // Kafka'ya gönder
             kafkaTemplate.send(TOPIC, "create", chargingStation);
-        }
-    }
 
+            // Redis'e kaydet (ID'yi 24 saat boyunca sakla)
+            redisTemplate.opsForValue().set(REDIS_KEY_PREFIX + stationId, true, Duration.ofHours(24));
+            processedCount++;
+        }
+
+    }
 
     // API'den gelen veriyi DTO'ya dönüştüren metot
     private ConsumerCreateChargeStation convertToChargingStationCreateRequestDTO(JSONObject stationData) {

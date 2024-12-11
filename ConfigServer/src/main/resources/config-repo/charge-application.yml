@@ -12,7 +12,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update  # Veritabanı şeması otomatik olarak güncellenecek
+      ddl-auto: create  # Veritabanı şeması otomatik olarak güncellenecek
     properties:
       hibernate:
         hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect

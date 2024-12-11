@@ -35,6 +35,9 @@ public class ChargingStationService {
         ChargingStation existingStation = chargingStationRepository.findByName(dto.getName())
                 .orElse(null); // Burada Optional yerine null döndürüyoruz.
 
+        if (existingStation != null) {
+            return false;
+        }
 
         // Yeni location nesneleri oluşturuluyor
         List<Location> newLocations = new ArrayList<>();
@@ -61,34 +64,37 @@ public class ChargingStationService {
 
     @Cacheable(value = "station-find-by-id-case")
     public ChargingStationLocationDTO findByStationId(Long stationId) {
-        // Fetching raw results from the repository for the given station ID
+        // Veritabanından sonuçları alıyoruz
         List<Object[]> rawResults = locationRepository.findStationLocationDetailsByStationId(stationId);
 
+        // Eğer sonuçlar boşsa, bir hata fırlatıyoruz
         if (rawResults.isEmpty()) {
-            // Handle the case where no station is found for the given ID
-            throw new IllegalArgumentException("No Charging Station found with ID: " + stationId);
+            // Detaylı hata mesajı veriyoruz
+            throw new IllegalArgumentException("No Charging Station found with ID: " + stationId + ". Please check if the ID exists in the database.");
         }
 
-        // Variables to store the station information
+        // Station bilgilerini tutacak değişkenler
         String stationName = null;
         Double chargeSpeed = null;
         List<LocationResponseDTO> locations = new ArrayList<>();
 
+        // Veritabanından gelen sonuçları işliyoruz
         for (Object[] result : rawResults) {
-            stationName = (String) result[1];
-            chargeSpeed = ((Number) result[2]).doubleValue();
-            Long locationId = ((Number) result[3]).longValue();
-            String locationCountry = (String) result[4];
-            String locationCity = (String) result[5];
-            String locationAddress = (String) result[6];
+            stationName = (String) result[1]; // İstasyon ismi
+            chargeSpeed = ((Number) result[2]).doubleValue(); // Şarj hızı
+            Long locationId = ((Number) result[3]).longValue(); // Konum ID'si
+            String locationCountry = (String) result[4]; // Konum ülke
+            String locationCity = (String) result[5]; // Konum şehir
+            String locationAddress = (String) result[6]; // Konum adresi
 
-            // Add the current location to the locations list
+            // Konumları LocationResponseDTO nesnelerine ekliyoruz
             locations.add(new LocationResponseDTO(locationId, locationCountry, locationCity, locationAddress));
         }
 
-        // Return the ChargingStationLocationDTO for the given station
+        // Tüm bilgileri içeren ChargingStationLocationDTO döndürüyoruz
         return new ChargingStationLocationDTO(stationId, stationName, chargeSpeed, locations);
     }
+
 
 
 
@@ -98,7 +104,7 @@ public class ChargingStationService {
     public List<ChargingStationLocationDTO> findAll() {
         // Repository'den ham sonuçları çekiyoruz
         List<Object[]> rawResults = locationRepository.findAllStationLocationDetails();
-
+        System.out.println(rawResults);
         // Ham sonuçları DTO'ya dönüştürüyoruz
         // Grup işlemi yapılacak, her bir charging station için birden fazla location olabilir
         Map<Long, ChargingStationLocationDTO> stationMap = new HashMap<>();

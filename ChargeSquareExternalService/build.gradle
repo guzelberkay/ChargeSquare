@@ -5,6 +5,7 @@ dependencies {
     implementation libs.springCloudOpenFeign
     implementation libs.springCloudConfigClient
     implementation libs.springBootWeb
+    implementation libs.redisReactive
 
 
 

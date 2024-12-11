@@ -2,6 +2,7 @@ package com.berkay.service;
 
 import com.berkay.kafka.producer.ChargeSquareProducer;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class ExternalApiService {
 
     private final ChargeSquareProducer chargeSquareProducer;
-
+   // @Cacheable(value = "external-case")
     public boolean create() {
         try {
             // ChargeSquareProducer'dan sendCreate metodunu çağırarak Kafka'ya mesaj gönder
