@@ -41,7 +41,7 @@ ext {
             json                            : "org.json:json:$versions.json",
 
             // Kafka Bağımlılıkları
-            springKafkaProducer             : "org.springframework.kafka:spring-kafka:$versions.springKafka", // Kafka Producer
-            springKafkaConsumer             : "org.springframework.kafka:spring-kafka:$versions.springKafka"  // Kafka Consumer
+            springKafka                     : "org.springframework.kafka:spring-kafka:$versions.springKafka", // Kafka Producer
+
     ]
 }

@@ -27,30 +27,31 @@ public class ChargeSquareProducer {
     private static final String REDIS_KEY_PREFIX = "charging_station:"; // Redis anahtar prefix
 
     public void sendCreate() {
-        // RestTemplate ile API'den veri çek
-        RestTemplate restTemplate = new RestTemplate();
+
+        RestTemplate restTemplate = new RestTemplate(); // RestTemplate ile API'den veri çektik
         String response = restTemplate.getForObject(API_URL, String.class);
 
-        // JSON verisini işle
-        JSONArray jsonArray = new JSONArray(response);
+
+        JSONArray jsonArray = new JSONArray(response); // JSON verisini işle
         int arrayLength = jsonArray.length();
 
-        // Random sınıfını kullanarak rastgele bir başlangıç indeksi belirle
         Random random = new Random();
-        int startIndex = random.nextInt(arrayLength); // 0 ile arrayLength-1 arasında rastgele bir değer
+        int startIndex = random.nextInt(arrayLength); // 0 ile arrayLength arasında rastgele bir değer vericek
 
-        // Döngüyü başlat, rastgele başlangıç indeksinden başlayarak 5 elemanı işleyelim
+
         int processedCount = 0; // İşlenen veri sayısı
+        // Burada şimdilik 5 adet veri dönmesini sağladım
+
         for (int i = startIndex; processedCount < 5 && i < arrayLength; i++) {
             JSONObject stationData = jsonArray.getJSONObject(i);
 
             // "ID" değerini alın ve String'e dönüştürün
-            Object idObject = stationData.opt("ID"); // Türden emin olmadığımız için "opt" kullanıyoruz
+            Object idObject = stationData.opt("ID"); // Hangi tür olduğunu net birşekilde bilmediğim için optional kullandım
             if (idObject == null) {
                 System.out.println("ID alanı mevcut değil. Atlanıyor.");
                 continue;
             }
-            String stationId = idObject.toString(); // ID'yi String'e dönüştür
+            String stationId = idObject.toString(); // ID'yi String'e dönüştürerek tür dönüşümü yaptım
 
             // Redis kontrolü: Aynı ID varsa işlemi atla
             if (redisTemplate.opsForValue().get(REDIS_KEY_PREFIX + stationId) != null) {
@@ -69,7 +70,7 @@ public class ChargeSquareProducer {
 
     }
 
-    // API'den gelen veriyi DTO'ya dönüştüren metot
+    // API'den gelen veri JSON olduğu için bunu DTO'ya dönüştüren metot
     private ConsumerCreateChargeStation convertToChargingStationCreateRequestDTO(JSONObject stationData) {
         // Şarj istasyonunun adı "AddressInfo" içinde yer alıyor
         String name = stationData.getJSONObject("AddressInfo").getString("Title");
@@ -77,27 +78,24 @@ public class ChargeSquareProducer {
         // Şarj hızı "Connections" içinde yer alıyor
         double chargeSpeed = stationData.getJSONArray("Connections")
                 .getJSONObject(0)
-                .getDouble("PowerKW"); // İlk bağlantının şarj gücü
+                .getDouble("PowerKW");
 
-        // Lokasyon verisini alalım: "AddressInfo" içindeki veriler
+
         JSONObject addressInfo = stationData.getJSONObject("AddressInfo");
 
-        // AddressLine1 ve AddressLine2'yi alalım, varsa
-        String addressLine1 = addressInfo.optString("AddressLine1", ""); // Eğer yoksa boş string döner
-        String addressLine2 = addressInfo.optString("AddressLine2", ""); // Eğer yoksa boş string döner
 
-        // İki adres satırını birleştirelim
+        String addressLine1 = addressInfo.optString("AddressLine1", ""); // mevcut değilse boş string dönmesi için default value belirledim
+        String addressLine2 = addressInfo.optString("AddressLine2", "");
+
         String address = addressLine1 + (addressLine2.isEmpty() ? "" : " " + addressLine2);
 
-        // Şehir ve ülke bilgilerini alalım
-        String city = addressInfo.optString("Town", ""); // "Town" verisini alalım
-        String country = addressInfo.getJSONObject("Country").optString("Title", ""); // "Country" -> "Title" verisini alalım
 
-        // Lokasyon verilerini listeye ekleyelim
+        String city = addressInfo.optString("Town", "");
+        String country = addressInfo.getJSONObject("Country").optString("Title", "");
+
+
         List<ConsumerLocations> locationDtos = new ArrayList<>();
-        locationDtos.add(new ConsumerLocations(address, city, country)); // Tek bir lokasyon olduğu varsayılıyor
-
-        // ConsumerCreateChargeStation nesnesi döndürülüyor
+        locationDtos.add(new ConsumerLocations(address, city, country));
         return ConsumerCreateChargeStation.builder()
                 .name(name)
                 .chargeSpeed(chargeSpeed)

@@ -1,14 +1,7 @@
 dependencies {
-
     implementation libs.json
-    implementation libs.springKafkaConsumer
-    implementation libs.springCloudOpenFeign
+    implementation libs.springKafka
     implementation libs.springCloudConfigClient
     implementation libs.springBootWeb
     implementation libs.redisReactive
-
-
-
-
-
 }

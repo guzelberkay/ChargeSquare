@@ -1,7 +1,5 @@
 package com.berkay.service;
 
-import com.berkay.dto.request.ChargingStationCreateRequestDTO;
-import com.berkay.dto.request.LocationSaveRequestDTO;
 import com.berkay.dto.response.ChargingStationLocationDTO;
 import com.berkay.dto.response.LocationResponseDTO;
 import com.berkay.entity.ChargingStation;
@@ -13,11 +11,13 @@ import com.berkay.repository.LocationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.kafka.annotation.EnableKafka;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -29,11 +29,10 @@ public class ChargingStationService {
     private final LocationRepository locationRepository;
 
 
-
-    @Transactional
+    @Transactional    // tüm yapılan değişiklikler geri alınır ve veritabanındaki veri tutarlılığı korunur.
     public boolean createChargingStation(ConsumerCreateChargeStation dto) {
         ChargingStation existingStation = chargingStationRepository.findByName(dto.getName())
-                .orElse(null); // Burada Optional yerine null döndürüyoruz.
+                .orElse(null);
 
         if (existingStation != null) {
             return false;
@@ -64,16 +63,16 @@ public class ChargingStationService {
 
     @Cacheable(value = "station-find-by-id-case")
     public ChargingStationLocationDTO findByStationId(Long stationId) {
-        // Veritabanından sonuçları alıyoruz
+
         List<Object[]> rawResults = locationRepository.findStationLocationDetailsByStationId(stationId);
 
-        // Eğer sonuçlar boşsa, bir hata fırlatıyoruz
+
         if (rawResults.isEmpty()) {
-            // Detaylı hata mesajı veriyoruz
+
             throw new IllegalArgumentException("No Charging Station found with ID: " + stationId + ". Please check if the ID exists in the database.");
         }
 
-        // Station bilgilerini tutacak değişkenler
+
         String stationName = null;
         Double chargeSpeed = null;
         List<LocationResponseDTO> locations = new ArrayList<>();
@@ -91,22 +90,16 @@ public class ChargingStationService {
             locations.add(new LocationResponseDTO(locationId, locationCountry, locationCity, locationAddress));
         }
 
-        // Tüm bilgileri içeren ChargingStationLocationDTO döndürüyoruz
         return new ChargingStationLocationDTO(stationId, stationName, chargeSpeed, locations);
     }
 
 
-
-
-
-
     @Cacheable(value = "station-find-all-case")
     public List<ChargingStationLocationDTO> findAll() {
-        // Repository'den ham sonuçları çekiyoruz
         List<Object[]> rawResults = locationRepository.findAllStationLocationDetails();
         System.out.println(rawResults);
-        // Ham sonuçları DTO'ya dönüştürüyoruz
-        // Grup işlemi yapılacak, her bir charging station için birden fazla location olabilir
+
+        // her bir charging station için birden fazla location olabilir
         Map<Long, ChargingStationLocationDTO> stationMap = new HashMap<>();
 
         for (Object[] result : rawResults) {
@@ -127,11 +120,11 @@ public class ChargingStationService {
                             new ArrayList<>()
                     ));
 
-            // Bu stationId için yeni bir locationDTO ekliyoruz
+
             stationDTO.getLocations().add(new LocationResponseDTO(locationId, locationCountry, locationCity, locationAddress));
         }
 
-        // stationMap'teki tüm stationları döndürüyoruz
+
         return new ArrayList<>(stationMap.values());
     }
 

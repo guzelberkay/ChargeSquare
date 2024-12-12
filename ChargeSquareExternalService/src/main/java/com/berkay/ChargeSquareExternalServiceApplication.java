@@ -14,8 +14,8 @@ public class ChargeSquareExternalServiceApplication {
         SpringApplication.run(ChargeSquareExternalServiceApplication.class, args);  // Uygulama başlatma
     }
 
-    @Bean
+    @Bean  //uygulamanın farklı yerlerinden erişilebilir olması için kullanıldı
     public RestTemplate restTemplate() {
-        return new RestTemplate();  // RestTemplate bean'i eklenir
+        return new RestTemplate();
     }
 }

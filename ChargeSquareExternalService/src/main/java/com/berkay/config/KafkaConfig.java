@@ -30,9 +30,9 @@ public class KafkaConfig {
     private Map<String, Object> senderProps() {
         Map<String, Object> props = new HashMap<>();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:29092");
-        props.put(ProducerConfig.LINGER_MS_CONFIG, 10);
-        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        props.put(ProducerConfig.LINGER_MS_CONFIG, 10);   // batching yani belirli bir süre boyunca toplu olarak işleme (10ms)
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class); //Gönderilen verileri kafkanın anlayabileceği bir byte dizisine dönüştürür.
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class); // mesaj dizilerini JSON formatına dönüştürür.
         return props;
     }
 

@@ -10,8 +10,6 @@ import java.util.List;
 
 @Repository
 public interface LocationRepository extends JpaRepository<Location, Long> {
-    @Query("SELECT l.id FROM Location l WHERE l.id IN :locationIds")
-    List<Long> findIdsByIds(@Param("locationIds") List<Long> locationIds);
 
     @Query(value = """
         SELECT 

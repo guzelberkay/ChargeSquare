@@ -7,6 +7,6 @@ dependencies {
     implementation libs.redisReactive
 
     // Kafka Producer Bağımlılığı
-    implementation libs.springKafkaProducer
+    implementation libs.springKafka
     implementation libs.springCloudConfigClient
 }
